@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import http from 'http';
 import path from 'path';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
@@ -266,10 +267,16 @@ app.post('/api/telegram/webhook', (req: Request, res: Response) => {
 // VITE MIDDLEWARE OR PRODUCTION STATIC SERVING
 // ============================================================================
 async function startServer() {
+  const server = http.createServer(app);
+
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
+    // Attach Vite's HMR WebSocket to the same HTTP server so it is reachable
+    // through the same origin/port the preview proxy exposes. Respect the
+    // DISABLE_HMR flag used during agent edits.
+    const hmr = process.env.DISABLE_HMR === 'true' ? false : { server };
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -281,7 +288,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  server.listen(PORT, '0.0.0.0', () => {
     console.log(`ArokaApp Production Server running at http://0.0.0.0:${PORT}`);
     console.log(`Market: Hinjilicut, Ganjam, Odisha | Care Line: 8249892208`);
   });

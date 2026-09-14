@@ -62,50 +62,13 @@ export const ArokaLogo: React.FC<ArokaLogoProps> = ({
         onClick={enableDownloadModal ? () => setIsModalOpen(true) : undefined}
         title={enableDownloadModal ? "Click to view Aroka Brand & Logo Assets" : "ArokaApp Logo"}
       >
-        {/* Emblem Graphic */}
+        {/* Emblem Graphic — Official Aroka Logo */}
         <div className={`relative flex-shrink-0 ${emblemSizes[size]} transition-transform duration-200 group-hover:scale-105`}>
-          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-sm" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Base Rounded Shield */}
-            <rect 
-              x="2" 
-              y="2" 
-              width="96" 
-              height="96" 
-              rx="24" 
-              className={variant === 'white' ? 'fill-white/10 stroke-white/20' : 'fill-[#0A2540] stroke-slate-800/40'} 
-              strokeWidth="1.5"
-            />
-
-            {/* Left Arch Pillar (Royal Blue / Tech & Stability) */}
-            <path 
-              d="M 23 75 L 43 23 C 45 18 50 18 52 23 L 61 45" 
-              stroke={variant === 'white' ? '#93C5FD' : '#60A5FA'} 
-              strokeWidth="8.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-            />
-
-            {/* Right Wing & Care Leaf Motif (Emerald Green / Heart & Care) */}
-            <path 
-              d="M 50 19 C 58 19 77 47 77 75 C 67 75 59 69 53 61" 
-              stroke={variant === 'white' ? '#6EE7B7' : '#10B981'} 
-              strokeWidth="8.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-            />
-
-            {/* Community & Trade Infinity Bridge (Connect & Trade) */}
-            <path 
-              d="M 33 53 C 40 47 56 47 64 53 C 68 56 67 62 61 63 C 51 65 41 50 33 53 Z" 
-              fill={variant === 'white' ? '#34D399' : '#059669'} 
-            />
-
-            {/* Central Community Pulse Node */}
-            <circle cx="50" cy="51" r="4" fill="#FFFFFF" />
-
-            {/* Apex Spark (Vibe Indicator) */}
-            <circle cx="50" cy="13" r="3.5" fill="#34D399" />
-          </svg>
+          <img
+            src="/aroka-logo.jpeg"
+            alt="Aroka App logo"
+            className={`w-full h-full object-contain rounded-xl ${variant === 'white' ? 'bg-white/95 p-0.5 shadow-sm' : 'drop-shadow-sm'}`}
+          />
         </div>
 
         {/* Wordmark and Tagline */}

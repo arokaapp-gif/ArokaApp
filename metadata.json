@@ -1,0 +1,7 @@
+{
+  "name": "ArokaApp",
+  "description": "Connect. Trade. Vibe. Care. Indian local-first social, community, marketplace, companionship, dating, business advertising and AI platform.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

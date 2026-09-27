@@ -1,3 +1,4 @@
+```tsx
 import React, { useState } from 'react';
 import {
   Lock,
@@ -38,7 +39,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const getUserProfile = async (authUser: any) => {
     const { data, error } = await supabase
-      .from('profiles')
+      .from('user_profiles')
       .select('*')
       .eq('id', authUser.id)
       .maybeSingle();
@@ -50,7 +51,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     return data;
   };
 
-  const convertToArokaUser = (authUser: any, profile: any): UserProfile => ({
+  const convertToArokaUser = (
+    authUser: any,
+    profile: any
+  ): UserProfile => ({
     id: authUser.id,
     email: authUser.email || '',
     displayName:
@@ -73,13 +77,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     isIdentityVerified: false,
     role: profile?.role || 'user',
     joinedDate: profile?.created_at
-      ? `Joined ${new Date(profile.created_at).toLocaleDateString(
-          'en-IN',
-          {
-            month: 'short',
-            year: 'numeric',
-          }
-        )}`
+      ? `Joined ${new Date(
+          profile.created_at
+        ).toLocaleDateString('en-IN', {
+          month: 'short',
+          year: 'numeric',
+        })}`
       : 'Joined now',
   });
 
@@ -116,10 +119,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         }
 
         if (!data.user) {
-          throw new Error('Account creation failed. Please try again.');
+          throw new Error(
+            'Account creation failed. Please try again.'
+          );
         }
 
-        // Supabase may require email verification before creating a session.
         if (!data.session) {
           setSuccessMsg(
             'Account created successfully. Please verify your email, then sign in.'
@@ -131,7 +135,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         const profile = await getUserProfile(data.user);
 
-        onLoginSuccess(convertToArokaUser(data.user, profile));
+        onLoginSuccess(
+          convertToArokaUser(data.user, profile)
+        );
         onClose();
       } else {
         const { data, error } =
@@ -145,12 +151,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         }
 
         if (!data.user) {
-          throw new Error('Login failed. Please try again.');
+          throw new Error(
+            'Login failed. Please try again.'
+          );
         }
 
         const profile = await getUserProfile(data.user);
 
-        onLoginSuccess(convertToArokaUser(data.user, profile));
+        onLoginSuccess(
+          convertToArokaUser(data.user, profile)
+        );
         onClose();
       }
     } catch (error: any) {
@@ -165,7 +175,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const handleForgotPassword = async () => {
     if (!email.trim()) {
-      setErrorMsg('Please enter your email address first.');
+      setErrorMsg(
+        'Please enter your email address first.'
+      );
       return;
     }
 
@@ -252,7 +264,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-3.5"
+        >
 
           {isSignUp && (
             <>
@@ -332,7 +347,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 }
                 placeholder="Enter password"
                 autoComplete={
-                  isSignUp ? 'new-password' : 'current-password'
+                  isSignUp
+                    ? 'new-password'
+                    : 'current-password'
                 }
                 className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500/30"
               />
@@ -395,3 +412,4 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     </div>
   );
 };
+```

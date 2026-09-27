@@ -35,22 +35,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
-  const getUserProfile = async (authUser: any) => {
-    const result = await supabase
+  const getUserProfile = async (userId: string) => {
+    const { data, error } = await supabase
       .from('user_profiles')
       .select('*')
-      .eq('id', authUser.id)
+      .eq('id', userId)
       .maybeSingle();
 
-    if (result.error) {
-      throw result.error;
-    }
+    if (error) throw error;
 
-    return result.data;
+    return data;
   };
 
   const convertToArokaUser = (
@@ -81,7 +77,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         profile?.display_name ||
         authUser.user_metadata?.display_name ||
         'Aroka User',
-      arokaId,
+      arokaId: arokaId,
       avatarUrl:
         profile?.avatar_url || DEFAULT_AVATAR,
       bio: profile?.bio || '',
@@ -92,11 +88,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       district: profile?.district || 'Ganjam',
       state: profile?.state || 'Odisha',
       pincode: profile?.pincode || '761102',
-      contactPhone:
-        profile?.phone || undefined,
+      contactPhone: profile?.phone || undefined,
       isIdentityVerified: false,
       role: profile?.role || 'user',
-      joinedDate,
+      joinedDate: joinedDate,
     };
   };
 
@@ -110,46 +105,52 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setSuccessMsg('');
 
     try {
+      if (!email.trim()) {
+        throw new Error('Please enter your email address.');
+      }
+
+      if (!password) {
+        throw new Error('Please enter your password.');
+      }
+
       if (isSignUp) {
         if (!fullName.trim()) {
-          throw new Error(
-            'Please enter your full name.'
-          );
+          throw new Error('Please enter your full name.');
         }
 
         if (!locality.trim()) {
+          throw new Error('Please enter your locality.');
+        }
+
+        if (password.length < 6) {
           throw new Error(
-            'Please enter your locality.'
+            'Password must be at least 6 characters.'
           );
         }
 
-        const result =
+        const { data, error } =
           await supabase.auth.signUp({
             email: email.trim(),
-            password,
+            password: password,
             options: {
               data: {
-                display_name:
-                  fullName.trim(),
-                locality:
-                  locality.trim(),
+                display_name: fullName.trim(),
+                locality: locality.trim(),
               },
             },
           });
 
-        if (result.error) {
-          throw result.error;
-        }
+        if (error) throw error;
 
-        if (!result.data.user) {
+        if (!data.user) {
           throw new Error(
             'Account creation failed. Please try again.'
           );
         }
 
-        if (!result.data.session) {
+        if (!data.session) {
           setSuccessMsg(
-            'Account created successfully. Please verify your email, then sign in.'
+            'Account created. Please verify your email, then sign in.'
           );
 
           setIsSignUp(false);
@@ -157,44 +158,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           return;
         }
 
-        const profile =
-          await getUserProfile(
-            result.data.user
-          );
+        const profile = await getUserProfile(
+          data.user.id
+        );
 
         onLoginSuccess(
           convertToArokaUser(
-            result.data.user,
+            data.user,
             profile
           )
         );
 
         onClose();
       } else {
-        const result =
+        const { data, error } =
           await supabase.auth.signInWithPassword({
             email: email.trim(),
-            password,
+            password: password,
           });
 
-        if (result.error) {
-          throw result.error;
-        }
+        if (error) throw error;
 
-        if (!result.data.user) {
+        if (!data.user) {
           throw new Error(
             'Login failed. Please try again.'
           );
         }
 
-        const profile =
-          await getUserProfile(
-            result.data.user
-          );
+        const profile = await getUserProfile(
+          data.user.id
+        );
 
         onLoginSuccess(
           convertToArokaUser(
-            result.data.user,
+            data.user,
             profile
           )
         );
@@ -224,7 +221,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setSuccessMsg('');
 
     try {
-      const result =
+      const { error } =
         await supabase.auth.resetPasswordForEmail(
           email.trim(),
           {
@@ -233,9 +230,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           }
         );
 
-      if (result.error) {
-        throw result.error;
-      }
+      if (error) throw error;
 
       setSuccessMsg(
         'Password reset email sent. Please check your inbox.'
@@ -251,10 +246,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm">
       <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
 
         <button
+          type="button"
           onClick={onClose}
           className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100"
           aria-label="Close"

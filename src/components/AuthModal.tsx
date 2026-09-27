@@ -63,8 +63,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       'Aroka User',
 
     arokaId: profile?.username
-      ? `@${profile.username}`
-      : `@aroka_${authUser.id.slice(0, 8)}`,
+      ? '@' + profile.username
+      : '@aroka_' + authUser.id.slice(0, 8),
 
     avatarUrl: profile?.avatar_url || DEFAULT_AVATAR,
     bio: profile?.bio || '',
@@ -82,12 +82,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     role: profile?.role || 'user',
 
     joinedDate: profile?.created_at
-      ? `Joined ${new Date(
-          profile.created_at
-        ).toLocaleDateString('en-IN', {
-          month: 'short',
-          year: 'numeric',
-        })}`
+      ? 'Joined ' +
+        new Date(profile.created_at).toLocaleDateString(
+          'en-IN',
+          {
+            month: 'short',
+            year: 'numeric',
+          }
+        )
       : 'Joined now',
   });
 
